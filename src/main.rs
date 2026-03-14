@@ -1,7 +1,7 @@
 
 use std::thread;
 use std::sync::Arc;
-use std::sync::Mutex;
+
 fn main() {
     /*  println!("Hello, world!");
     let t = thread::spawn(||{
@@ -28,21 +28,42 @@ fn main() {
     for handle in handles {
             handle.join().unwrap();
         } */
-       let nombre = Arc::new(10);
+      // Import du module thread de la bibliothèque standard
+// Il permet de créer et gérer des threads
+use std::thread;
 
-       let a = Arc::clone(&nombre);
+// Import de Arc (Atomic Reference Counting)
+// Arc permet de partager une donnée entre plusieurs threads en toute sécurité
 
-       let handle = 
-       thread::spawn(move || {
-        println!("travaill en cour... resultat : {}", a);
+    // Création d'une valeur partagée entre plusieurs threads
+    // Arc permet d'avoir plusieurs propriétaires de la même donnée
+    let nombre = Arc::new(10);
 
-       });
+    // On clone la référence Arc
+    // Attention : cela ne copie PAS la valeur 10
+    // Cela augmente simplement le compteur de références
+    let a = Arc::clone(&nombre);
 
-       handle.join().unwrap();
+    // Création d'un nouveau thread
+    // thread::spawn lance un thread qui exécute la closure
+    let handle =
+    thread::spawn(move || {
 
-       println!("{}",nombre);
+        // "move" déplace la propriété de la variable "a"
+        // dans le thread pour qu'il puisse l'utiliser
+        println!("travail en cours... resultat : {}", a);
 
-      
-    }
+    });
+
+    // join() permet d'attendre que le thread se termine
+    // Sans join(), le programme pourrait se terminer avant la fin du thread
+    handle.join().unwrap();
+
+    // Le thread principal peut toujours accéder à "nombre"
+    // car Arc permet plusieurs références vers la même donnée
+    println!("{}", nombre);
+
+}
+    
     
     
